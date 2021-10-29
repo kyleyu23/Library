@@ -5,19 +5,31 @@ function Book(title, author, pages, read) {
         this.read = read;
 }
 
-function addNewBook(Book) {
-    myLibrary.push(Book);
-}
+function addNewBook() {
+    //get user input
+    const titleElementValue = document.querySelector('[data-title]').value;
+    const authorElementValue = document.querySelector('[data-author]').value;
+    const pagesElementValue = document.querySelector('[data-pages]').value;
+    const readElementValue = document.querySelector('[data-read]').value;
+    const bookValues = [titleElementValue, authorElementValue, pagesElementValue, readElementValue]
 
-function displayBooks(books) {
-    // [{}] -> [[]]
-    const rows = books.map(book => [...Object.values(book)]);
+    updateTable();
+    updateLibrary();
 
-    //[[]] -> [] ; rows
-    for (let index = 0; index < rows.length; index++) {
-        const row = rows[index]
-        //[] -> '' ; row cells
-        appendRow(row);
+
+    function updateTable() {
+        const rowElement = document.createElement('tr')
+
+        for (let index = 0; index < bookValues.length; index++) {
+            const cellElement = document.createElement('td');
+            cellElement.textContent = bookValues[index];
+            rowElement.appendChild(cellElement);
+        }
+        booksTable.appendChild(rowElement);
+    }
+
+    function updateLibrary() {
+        myLibrary.push(new Book(bookValues));
     }
 
 }
@@ -31,31 +43,8 @@ function toggleReadStatus() {
 }
 
 let myLibrary = [];
-
-function addSampleBooks() {
-    const sample_book1 = new Book("sample1", "author", 255, false);
-    const sample_book2 = new Book("sample2", "author", 255, false);
-    const sample_book3 = new Book("sample3", "author", 255, false);
-
-    addNewBook(sample_book1);
-    addNewBook(sample_book2);
-    addNewBook(sample_book3);
-}
-
 const booksTable = document.querySelector('[data-table-body]');
-
-function appendRow(rowCellsData) {
-    const rowElement = document.createElement('tr')
-    for (let index = 0; index < rowCellsData.length; index++) {
-        const cellData = rowCellsData[index];
-
-        const cellElement = document.createElement('td');
-        cellElement.textContent = cellData;
-
-        rowElement.appendChild(cellElement)
-    }
-    booksTable.appendChild(rowElement);
-}
-
-addSampleBooks();
-displayBooks(myLibrary);
+const addBookButton = document.querySelector('[data-add-book]');
+addBookButton.addEventListener('click', () => {
+    addNewBook();
+})
