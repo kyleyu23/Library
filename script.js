@@ -5,46 +5,89 @@ function Book(title, author, pages, read) {
         this.read = read;
 }
 
-function addNewBook() {
-    //get user input
-    const titleElementValue = document.querySelector('[data-title]').value;
-    const authorElementValue = document.querySelector('[data-author]').value;
-    const pagesElementValue = document.querySelector('[data-pages]').value;
-    const readElementValue = document.querySelector('[data-read]').value;
-    const bookValues = [titleElementValue, authorElementValue, pagesElementValue, readElementValue]
+function getInput() {
+    if (titleElement.value === '' || authorElement.value === '' || pagesElement.value === '' || readElement.value === '') {
+        return;
+    }
 
-    updateTable();
-    updateLibrary();
+    return [titleElement.value, authorElement.value, pagesElement.value, readElement.value]
 
+}
 
-    function updateTable() {
-        const rowElement = document.createElement('tr')
+function updateTable(bookValues) {
+    const rowElement = document.createElement('tr')
 
-        for (let index = 0; index < bookValues.length; index++) {
-            const cellElement = document.createElement('td');
-            cellElement.textContent = bookValues[index];
-            rowElement.appendChild(cellElement);
+    //set index of this book relative to myLibrary
+    const bookIndexInLibrary = myLibrary.length - 1;
+    rowElement.dataset.index = bookIndexInLibrary;
+
+    //create row, but not including readStatus
+    for (let index = 0; index < bookValues.length - 1; index++) {
+        const cellElement = document.createElement('td');
+        cellElement.textContent = bookValues[index];
+        rowElement.appendChild(cellElement);
+    }
+    booksTable.appendChild(rowElement);
+
+    //create readButton
+    const readButton = document.createElement('button');
+    readButton.innerText = bookValues[bookValues.length - 1];
+    rowElement.appendChild(readButton);
+    readButton.addEventListener('click', () => {
+        if (readButton.innerText === 'Read') {
+            readButton.innerText = 'Not Read';
+        } else {
+            readButton.innerText = 'Read';
         }
-        booksTable.appendChild(rowElement);
-    }
+    })
 
-    function updateLibrary() {
-        myLibrary.push(new Book(bookValues));
-    }
-
-}
-
-function removeBook() {
-
-}
-
-function toggleReadStatus() {
+    //create delete button
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = "Delete";
+    rowElement.appendChild(deleteButton);
+    deleteButton.addEventListener('click', bookIndexInLibrary => {
+        removeBook(bookIndexInLibrary);
+        deleteButton.parentNode.innerHTML = '';
+    })
 
 }
+
+function addBookToLibrary(bookValues) {
+    myLibrary.push(new Book(bookValues));
+}
+
+function removeBook(index) {
+    myLibrary.splice(index, 1)
+}
+
+function clearInput() {
+    titleElement.value = '';
+    authorElement.value = '';
+    pagesElement.value = '';
+}
+
+
+
+
 
 let myLibrary = [];
+
 const booksTable = document.querySelector('[data-table-body]');
-const addBookButton = document.querySelector('[data-add-book]');
+
+const addBookButton = document.querySelector('#add-book');
+
+const titleElement = document.querySelector('[data-title]')
+const authorElement = document.querySelector('[data-author]')
+const pagesElement = document.querySelector('[data-pages]')
+const readElement = document.querySelector('[data-read]')
+
 addBookButton.addEventListener('click', () => {
-    addNewBook();
+    const bookValues = getInput();
+    clearInput();
+    if (!bookValues) {
+        alert("Please enter all fields")
+        return;
+    }
+    addBookToLibrary(bookValues);
+    updateTable(bookValues);
 })
